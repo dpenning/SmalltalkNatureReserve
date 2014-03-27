@@ -1,5 +1,5 @@
 Object subclass: #Animal .
-Animal instanceVariableNames: 'row column direction ID' .
+Animal instanceVariableNames: 'active row column direction ID' .
 Animal class instanceVariableNames: 'currentID' .
 Animal comment: 'This is an animal' .
 
@@ -18,11 +18,15 @@ Animal class extend [
 ]
 Animal extend [
 	init [
+		active := false.
 		row := -1.
 		column := -1.
 		direction := -1.
 		ID := Animal getCount.
 	]
+	getActive [ ^active ]
+	activate [ active := true ]
+	deactivate [ active := false ]
 	setRow:r [ row := r ]
 	setCol:c [ column := c ]
 	getID [ ^ID ]
@@ -49,11 +53,6 @@ Animal subclass: #Lynx.
 Lynx extend[
 	act []
 ]
-
-
-
-
-
 
 Object subclass: #Grid .
 Grid instanceVariableNames: 'gridArray' .
@@ -95,18 +94,19 @@ Grid extend [
 	]
 	remove:animal row:r col:c [
 		"First get the location of the animal in the gridArray"
-		((gridArray at:r) at:c) remove: animal ifAbsent: [] .
+		^((gridArray at:r) at:c) remove: animal ifAbsent: [] .
 	]
 	debugRow:r Col:c [
 		^((gridArray at:r) at:c) 
 	]
 	makeAllActive [
+		(1 to: 10) do: [ :a | 
+			(1 to: 10) do: [ :b | 
+				((gridArray at:a) at:b) do: [ :c | c activate ].
+			] .
+		] .
 	]
 ]
-
-
-
-
 
 Object subclass: #Simulation .
 Simulation instanceVariableNames: 'grid' .
@@ -142,9 +142,45 @@ Simulation extend [
 				grid place:new_lynx row:x col:y .
 		].
 	]
+	printOn: stream [
+		|temp_string|
+		(1 to:10) do: [ :a |
+			stream nextPutAll: '-----------------------------------' .
+			stream nextPutAll: '-----------------------------------
+|' .
+			(1 to:10) do: [ :b |
+				temp_string := ((grid getLynxesAtRow:a Col:b) asString) .
+				[(temp_string size) < 4] whileTrue: [temp_string := (' ',temp_string)] .
+				stream nextPutAll: (temp_string,' | ') . 
+			] .
+			stream nextPutAll: '
+|' .
+			(1 to:10) do: [ :b |
+				temp_string := ((grid getRabbitsAtRow:a Col:b) asString) . 
+				[(temp_string size) < 4] whileTrue: [temp_string := (' ',temp_string)] .
+				stream nextPutAll: (temp_string,' | ') . 
+			] .
+			stream nextPutAll: '
+' .
+		] .
+		stream nextPutAll: '-----------------------------------' .
+		stream nextPutAll: '-----------------------------------
+' .
+	]
 ]
 
-
+Simulation extend [
+	step [
+		"set all animals active"
+		gridArray makeAllActive .
+		((1 to:10) shuffled) do: [ :r |
+			((1 to:10) shuffled) do: [ :c |
+				"this is the actual thing we need to do"
+				"perform an action on all "
+			] .
+		] .
+	]
+]
 
 
 
