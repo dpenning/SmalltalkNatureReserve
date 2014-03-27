@@ -21,7 +21,7 @@ Animal extend [
 		active := false.
 		row := -1.
 		column := -1.
-		direction := -1.
+		self setDirection . 
 		ID := Animal getCount.
 	]
 	getActive [ ^active ]
@@ -34,11 +34,36 @@ Animal extend [
 	getCol [ ^column ]
 	getDirection [ ^direction ]
 	setDirection [ direction := (1 to: 4) atRandom. ]
+	move [
+		(direction == 1) ifTrue: [
+			"up"
+			(row == 1) ifTrue: [row := 10] ifFalse: [row := (row-1)].
+		] .
+		(direction == 2) ifTrue: [
+			"down"
+			(row == 10) ifTrue: [row := 1] ifFalse: [row := (row+1)].
+		] .
+		(direction == 3) ifTrue: [
+			"left"
+			(column == 1) ifTrue: [column := 10] ifFalse: [column := (column-1)].
+		] .
+		(direction == 4) ifTrue: [
+			"right"
+			(column == 10) ifTrue: [column := 1] ifFalse: [column := (column+1)].
+		] .
+		self setDirection .
+	]
 	printOn: stream [
 		super printOn: stream.
 		stream nextPutAll: '(' .
 		ID printOn: stream.
+		stream nextPutAll: ',' .
+		stream nextPutAll: ' (' .
+		row printOn: stream.	
+		stream nextPutAll: ',' .
+		column printOn: stream.
 		stream nextPutAll: ')' .
+		stream nextPutAll: ' )' .
 	]
 ]
 
@@ -46,12 +71,25 @@ Animal subclass: #Rabbit.
 
 Rabbit extend [
 	act []
+	actWithGrid:g [
+		((g getRabbitsAtRow: (self getRow) col: (self getCol)) > 1) ifTrue: [
+			(1 to:2) do: [:a | g place:(Rabbit new) row:(self getRow) col:(self getCol)] . 
+		].
+	]
 ]
 
 Animal subclass: #Lynx.
 
 Lynx extend[
 	act []
+	actWithGrid:g [
+		((g getRabbitsAtRow:(self getRow) col:(self getCol)) > 0) ifTrue: [
+			g remove:((g getListAtRow:(self getRow) Col: (self getCol)) detect: [:a | a class = Rabbit] ifNone:[nil]) row:(self getRow) col:(self getCol) .
+			g place:(Lynx new) row:(self getRow) col:(self getCol) .
+		] ifFalse: [
+			g remove:self row:(self getRow) col:(self getCol) .
+		].
+	]
 ]
 
 Object subclass: #Grid .
@@ -80,10 +118,13 @@ Grid extend [
 			gridArray add: x . 
 		]
 	]
-	getLynxesAtRow:r Col:c [
+	getActiveAtRow:r Col:c [
+		^(((gridArray at:r) at:c) detect: [ :a | (a getActive)] ifNone:[nil])
+	]
+	getLynxesAtRow:r col:c [
 		^((((gridArray at:r) at:c) select: [:a | a class = Lynx]) size)
 	]
-	getRabbitsAtRow:r Col:c [
+	getRabbitsAtRow:r col:c [
 		^((((gridArray at:r) at:c) select: [:a | a class = Rabbit]) size)
 	]
 	place:animal row:r col:c [
@@ -94,9 +135,9 @@ Grid extend [
 	]
 	remove:animal row:r col:c [
 		"First get the location of the animal in the gridArray"
-		^((gridArray at:r) at:c) remove: animal ifAbsent: [] .
+		^(((gridArray at:r) at:c) remove: animal ifAbsent: []) .
 	]
-	debugRow:r Col:c [
+	getListAtRow:r Col:c [
 		^((gridArray at:r) at:c) 
 	]
 	makeAllActive [
@@ -127,7 +168,7 @@ Simulation extend [
 		grid := Grid new .
 	]
 	setup [
-		(1 to:50) do: [ :a |
+		(1 to:30) do: [ :a |
 			| x y new_rabbit |
 				x := (1 to:10) atRandom .
 				y := (1 to:10) atRandom .
@@ -149,14 +190,14 @@ Simulation extend [
 			stream nextPutAll: '-----------------------------------
 |' .
 			(1 to:10) do: [ :b |
-				temp_string := ((grid getLynxesAtRow:a Col:b) asString) .
+				temp_string := ((grid getLynxesAtRow:a col:b) asString) .
 				[(temp_string size) < 4] whileTrue: [temp_string := (' ',temp_string)] .
 				stream nextPutAll: (temp_string,' | ') . 
 			] .
 			stream nextPutAll: '
 |' .
 			(1 to:10) do: [ :b |
-				temp_string := ((grid getRabbitsAtRow:a Col:b) asString) . 
+				temp_string := ((grid getRabbitsAtRow:a col:b) asString) . 
 				[(temp_string size) < 4] whileTrue: [temp_string := (' ',temp_string)] .
 				stream nextPutAll: (temp_string,' | ') . 
 			] .
@@ -171,12 +212,20 @@ Simulation extend [
 
 Simulation extend [
 	step [
+		| current_animal |
 		"set all animals active"
-		gridArray makeAllActive .
-		((1 to:10) shuffled) do: [ :r |
-			((1 to:10) shuffled) do: [ :c |
-				"this is the actual thing we need to do"
-				"perform an action on all "
+		grid makeAllActive .
+		(1 to:10) do: [ :r |
+			(1 to:10) do: [ :c |
+				current_animal := (grid getActiveAtRow:r Col:c) .
+				[(current_animal isNil) = false] whileTrue: [
+					grid remove:current_animal row:r col:c .
+					current_animal move .
+					grid place:current_animal row: (current_animal getRow) col: (current_animal getCol) . 
+					current_animal actWithGrid:grid .
+					current_animal deactivate .
+					current_animal := (grid getActiveAtRow:r Col:c) .
+				].
 			] .
 		] .
 	]
