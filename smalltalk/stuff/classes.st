@@ -1,5 +1,5 @@
 Object subclass: #Animal .
-Animal instanceVariableNames: 'active row column direction ID' .
+Animal instanceVariableNames: 'active_grid active row column direction ID' .
 Animal class instanceVariableNames: 'currentID' .
 Animal comment: 'This is an animal' .
 
@@ -18,12 +18,15 @@ Animal class extend [
 ]
 Animal extend [
 	init [
+		active_grid := nil .
 		active := false.
 		row := -1.
 		column := -1.
-		self setDirection . 
+		self setDirection:((1 to: 4) atRandom) . 
 		ID := Animal getCount.
 	]
+	setGrid:new_grid [active_grid := new_grid]
+	getGrid [^active_grid]
 	getActive [ ^active ]
 	activate [ active := true ]
 	deactivate [ active := false ]
@@ -33,7 +36,7 @@ Animal extend [
 	getRow [ ^row ]
 	getCol [ ^column ]
 	getDirection [ ^direction ]
-	setDirection [ direction := (1 to: 4) atRandom. ]
+	setDirection:new_dir [ direction := new_dir ]
 	move [
 		(direction == 1) ifTrue: [
 			"up"
@@ -51,7 +54,7 @@ Animal extend [
 			"right"
 			(column == 10) ifTrue: [column := 1] ifFalse: [column := (column+1)].
 		] .
-		self setDirection .
+		self setDirection:((1 to: 4) atRandom) .
 	]
 	printOn: stream [
 		super printOn: stream.
@@ -70,7 +73,7 @@ Animal extend [
 Animal subclass: #Rabbit.
 
 Rabbit extend [
-	act []
+	act [self actWithGrid:(self getGrid)]
 	actWithGrid:g [
 		((g getRabbitsAtRow: (self getRow) col: (self getCol)) > 1) ifTrue: [
 			(1 to:2) do: [:a | g place:(Rabbit new) row:(self getRow) col:(self getCol)] . 
@@ -81,7 +84,7 @@ Rabbit extend [
 Animal subclass: #Lynx.
 
 Lynx extend[
-	act []
+	act [self actWithGrid:(self getGrid)]
 	actWithGrid:g [
 		((g getRabbitsAtRow:(self getRow) col:(self getCol)) > 0) ifTrue: [
 			g remove:((g getListAtRow:(self getRow) Col: (self getCol)) detect: [:a | a class = Rabbit] ifNone:[nil]) row:(self getRow) col:(self getCol) .
@@ -150,7 +153,7 @@ Grid extend [
 ]
 
 Object subclass: #Simulation .
-Simulation instanceVariableNames: 'grid' .
+Simulation instanceVariableNames: 'grid month' .
 Simulation class instanceVariableNames: '' .
 Simulation comment: 'our simulation' .
 
@@ -165,10 +168,11 @@ Simulation class extend [
 
 Simulation extend [
 	init [
+		month := 0 .
 		grid := Grid new .
 	]
 	setup [
-		(1 to:30) do: [ :a |
+		(1 to:50) do: [ :a |
 			| x y new_rabbit |
 				x := (1 to:10) atRandom .
 				y := (1 to:10) atRandom .
@@ -185,6 +189,12 @@ Simulation extend [
 	]
 	printOn: stream [
 		|temp_string|
+		stream nextPutAll: '------------------------ month: ' .
+		temp_string := (month asString) . 
+		[(temp_string size) < 4] whileTrue: [temp_string := (temp_string,' ')] .
+		stream nextPutAll:temp_string . 
+		stream nextPutAll: ' ---------------------------------
+' .
 		(1 to:10) do: [ :a |
 			stream nextPutAll: '-----------------------------------' .
 			stream nextPutAll: '-----------------------------------
@@ -208,6 +218,10 @@ Simulation extend [
 		stream nextPutAll: '-----------------------------------
 ' .
 	]
+	status [
+		self printNl .
+
+	]
 ]
 
 Simulation extend [
@@ -215,14 +229,16 @@ Simulation extend [
 		| current_animal |
 		"set all animals active"
 		grid makeAllActive .
+		month := (month + 1) .
 		(1 to:10) do: [ :r |
 			(1 to:10) do: [ :c |
 				current_animal := (grid getActiveAtRow:r Col:c) .
 				[(current_animal isNil) = false] whileTrue: [
 					grid remove:current_animal row:r col:c .
 					current_animal move .
-					grid place:current_animal row: (current_animal getRow) col: (current_animal getCol) . 
-					current_animal actWithGrid:grid .
+					grid place:current_animal row: (current_animal getRow) col: (current_animal getCol) .
+					current_animal setGrid: grid .
+					current_animal act .
 					current_animal deactivate .
 					current_animal := (grid getActiveAtRow:r Col:c) .
 				].

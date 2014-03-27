@@ -2,7 +2,7 @@
 	| the_sim |
 		the_sim := Simulation new .
 		the_sim setup . 
-		the_sim printNl. 
+		the_sim status. 
 		the_sim step . 
-		the_sim printNl. 
+		the_sim status. 
 !
