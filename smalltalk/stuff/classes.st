@@ -89,6 +89,8 @@ Grid extend [
 	]
 	place:animal row:r col:c [
 		"puts an animal at r,c"
+		animal setRow:r .
+		animal setCol:c .
 		((gridArray at:r) at:c) addLast:animal .
 	]
 	remove:animal row:r col:c [
@@ -106,9 +108,41 @@ Grid extend [
 
 
 
+Object subclass: #Simulation .
+Simulation instanceVariableNames: 'grid' .
+Simulation class instanceVariableNames: '' .
+Simulation comment: 'our simulation' .
 
+Simulation class extend [
+	new [
+		| temp |
+		temp := super new . 
+		temp init. 
+		^temp
+	]
+]
 
-
+Simulation extend [
+	init [
+		grid := Grid new .
+	]
+	setup [
+		(1 to:50) do: [ :a |
+			| x y new_rabbit |
+				x := (1 to:10) atRandom .
+				y := (1 to:10) atRandom .
+				new_rabbit := Rabbit new .
+				grid place:new_rabbit row:a col:b .
+		].
+		(1 to:10) do: [ :a |
+			| x y new_lynx |
+				x := (1 to:10) atRandom .
+				y := (1 to:10) atRandom .
+				new_lynx := Lynx new .
+				grid place:new_lynx row:a col:b .
+		].
+	]
+]
 
 
 
