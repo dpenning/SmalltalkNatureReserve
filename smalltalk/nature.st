@@ -6,7 +6,7 @@ Animal comment: 'This is an animal' .
 Animal class extend [
 	new [
 		| temp |
-		currentID isNil ifTrue: [currentID := 0].
+		currentID isNil ifTrue: [currentID := 1].
 		temp := super new.
 		tempID := newID.
 		temp init: tempID.
@@ -32,10 +32,7 @@ Animal extend [
 	setDirection [ direction := (1 to: 4) atRandom. ]
 	printOn: stream [
 		super printOn: stream.
-		stream nextPutAll: ' row, column, direction, ID :' .
-		row printOn: stream.
-		column printOn: stream.
-		direction printOn: stream.
+		stream nextPutAll: '(ID)' .
 		ID printOn: stream
 	]
 ]
