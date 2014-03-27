@@ -132,14 +132,14 @@ Simulation extend [
 				x := (1 to:10) atRandom .
 				y := (1 to:10) atRandom .
 				new_rabbit := Rabbit new .
-				grid place:new_rabbit row:a col:b .
+				grid place:new_rabbit row:x col:y .
 		].
 		(1 to:10) do: [ :a |
 			| x y new_lynx |
 				x := (1 to:10) atRandom .
 				y := (1 to:10) atRandom .
 				new_lynx := Lynx new .
-				grid place:new_lynx row:a col:b .
+				grid place:new_lynx row:x col:y .
 		].
 	]
 ]
