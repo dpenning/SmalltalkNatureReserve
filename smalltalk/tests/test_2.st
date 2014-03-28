@@ -1,6 +1,7 @@
 (FileStream open: 'classes.st' mode: 'r') fileIn . !
-" test routine for ID's "
+"Test routine for ID's. If no error messages are printed, it is okay."
 |a b c d e f|
+	'If no error messages are printed, test2 succeeded.' printNl .
 	a := Animal new .
 	b := Rabbit new .
 	c := Lynx new .

@@ -1,6 +1,6 @@
 (FileStream open: 'classes.st' mode: 'r') fileIn . !
 " test routines for nature-reserve simulator "
-
+"The test data provided by Dr Finkel."
 |aLynx aGrid simulation|
 	aLynx := Lynx new .
 	'lynx id ' print .
