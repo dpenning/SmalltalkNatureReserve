@@ -1,3 +1,13 @@
+" David Pennington & Nick Graczyk
+This is the classes file for the program. This file builds 3 classes
+	- Animal : the animal class that serves as the base class for ...
+		- Rabbit : the rabbit subclass.
+		- Lynx : the lynx subclass.
+	- Grid : the class that stores the grid for the nature preserve.
+	- Simulation : the class that wraps around Grid and controls
+	the simulation.
+"
+
 Object subclass: #Animal .
 Animal instanceVariableNames: 'active_grid active row column direction ID' .
 Animal class instanceVariableNames: 'currentID' .
@@ -220,7 +230,6 @@ Simulation extend [
 	]
 	status [
 		self printNl .
-
 	]
 ]
 
