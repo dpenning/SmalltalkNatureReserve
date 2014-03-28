@@ -8,7 +8,7 @@ This is not a full attempt at extra credit however.
 Build Instruction
 ------------------------------
 Type make in the shell to run the program with a single simulation about for 10 steps today.
-Type make test{1-4} to run a testcase. Please read the test case and the output messages to understand what is happening.
+Type make test{1-4} to run a test case. Please read the test case and the output messages to understand what is happening.
 test_1.st is the test data Dr Finkel provided on his website. It runs a simulation and tests the grid and a lynx.
 test_2.st is test data for testing that IDs are being incremented sequentially and uniquely. It will not print anything
 but an informational if it is successful.
