@@ -21,7 +21,7 @@ Animal class extend [
 		^temp
 	]
 	getCount [
-		"manage the class instance variable with this function"
+		"Manage the class instance variable with this function."
 		currentID ifNil: [currentID := 0].
 		currentID := (currentID + 1). 
 		^currentID
@@ -90,6 +90,7 @@ Rabbit extend [
 	"To match the function signature specified, we store the Grid Location"
 	act [self actWithGrid:(self getGrid)]
 	actWithGrid:g [
+		"We have added a cap of 10 rabbits per grid square to keep the system more in balance."
 		((g getRabbitsAtRow: (self getRow) col: (self getCol)) >= 10) ifTrue: [
 			g remove:self row:(self getRow) col:(self getCol) . 
 		] ifFalse: [

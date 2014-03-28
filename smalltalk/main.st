@@ -3,7 +3,7 @@
 	| the_sim |
 		the_sim := Simulation new .
 		the_sim setup .
-		1 to: 5 do: [:a |
+		1 to: 10 do: [:a |
 		the_sim step . 
 		the_sim status. 
 		]

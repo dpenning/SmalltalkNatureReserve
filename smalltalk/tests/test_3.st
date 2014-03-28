@@ -2,7 +2,7 @@
 "Test placing animals on grid and the tools to find if they are on the grid."
 "If no error messages are printed, it is good."
 |a b grid|
-        'If no error messages are printed, test3 succeeded.' printNl .
+    'If no error messages are printed, test3 succeeded.' printNl .
 	a := Rabbit new .
 	b := Lynx new .
 	grid := Grid new .

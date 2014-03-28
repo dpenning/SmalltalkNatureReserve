@@ -1,0 +1,18 @@
+CS450 Assignment 3
+Nickolas Graczyk
+David Pennington
+
+A restriction has been added to rabbits to restrict them to 10 per square to keep the system more in balance.
+This is not a full attempt at extra credit however.
+
+Build Instruction
+------------------------------
+Type make in the shell to run the program with a single simulation about for 10 steps today.
+Type make test{1-4} to run a testcase. Please read the test case and the output messages to understand what is happening.
+test_1.st is the test data Dr Finkel provided on his website. It runs a simulation and tests the grid and a lynx.
+test_2.st is test data for testing that IDs are being incremented sequentially and uniquely. It will not print anything
+but an informational if it is successful.
+test_3.st is test data for testing the placement of animals on the grid and verifies that their locations are correct.
+If they are correct, only an informational message will be printed.
+test_4.st is test data for testing two simulation objects in the same program. Note that the animal numbers in the
+second simulation are not starting from 0 due to the nature of the class structure.

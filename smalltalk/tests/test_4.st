@@ -1,5 +1,6 @@
 (FileStream open: 'classes.st' mode: 'r') fileIn . !
 | simulation_1 simulation_2 |
+	"This test case tests a program with two simulations after a step in each."
 	simulation_1 := Simulation new .
 	simulation_2 := Simulation new .
 	simulation_1 setup .
