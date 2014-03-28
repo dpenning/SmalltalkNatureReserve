@@ -11,7 +11,7 @@ This is the classes file for the program. This file builds 3 classes
 Object subclass: #Animal .
 Animal instanceVariableNames: 'active_grid active row column direction ID' .
 Animal class instanceVariableNames: 'currentID' .
-Animal comment: 'This is an animal' .
+Animal comment: 'This is an animal.' .
 
 Animal class extend [
 	new [
@@ -21,6 +21,7 @@ Animal class extend [
 		^temp
 	]
 	getCount [
+		"manage the class instance variable with this function"
 		currentID ifNil: [currentID := 0].
 		currentID := (currentID + 1). 
 		^currentID
@@ -28,6 +29,8 @@ Animal class extend [
 ]
 Animal extend [
 	init [
+		"We use active_grid to tell us which grid location the animal is
+		active in. This is needed for act with no parameters"
 		active_grid := nil .
 		active := false.
 		row := -1.
@@ -67,6 +70,7 @@ Animal extend [
 		self setDirection:((1 to: 4) atRandom) .
 	]
 	printOn: stream [
+		"print ID, row and column for debugging purposes"
 		super printOn: stream.
 		stream nextPutAll: '(' .
 		ID printOn: stream.
@@ -83,6 +87,7 @@ Animal extend [
 Animal subclass: #Rabbit.
 
 Rabbit extend [
+	"To match the function signature specified, we store the Grid Location"
 	act [self actWithGrid:(self getGrid)]
 	actWithGrid:g [
 		((g getRabbitsAtRow: (self getRow) col: (self getCol)) > 1) ifTrue: [
@@ -108,7 +113,7 @@ Lynx extend[
 Object subclass: #Grid .
 Grid instanceVariableNames: 'gridArray' .
 Grid class instanceVariableNames: '' .
-Grid comment: 'a Grid' .
+Grid comment: 'This class defines the grid. Meant to exist inside a simulation but can exist outside.' .
 
 Grid class extend [
 	new [
@@ -119,6 +124,7 @@ Grid class extend [
 	]
 ]
 Grid extend [
+	"The grid is implemented as a list from which we select the correct animal."
 	init [
 		| x y |
 		gridArray := OrderedCollection new . 
@@ -132,16 +138,19 @@ Grid extend [
 		]
 	]
 	getActiveAtRow:r Col:c [
+		"Returns an active animal at a location to act."
 		^(((gridArray at:r) at:c) detect: [ :a | (a getActive)] ifNone:[nil])
 	]
 	getLynxesAtRow:r col:c [
+		"Count the number of lynxes at a location."
 		^((((gridArray at:r) at:c) select: [:a | a class = Lynx]) size)
 	]
 	getRabbitsAtRow:r col:c [
+		"Count the number of rabbits at a location."
 		^((((gridArray at:r) at:c) select: [:a | a class = Rabbit]) size)
 	]
 	place:animal row:r col:c [
-		"puts an animal at r,c"
+		"Puts an animal at r,c"
 		animal setRow:r .
 		animal setCol:c .
 		((gridArray at:r) at:c) addLast:animal .
@@ -154,6 +163,7 @@ Grid extend [
 		^((gridArray at:r) at:c) 
 	]
 	makeAllActive [
+		"Iterate over all animals and make all of them active."
 		(1 to: 10) do: [ :a | 
 			(1 to: 10) do: [ :b | 
 				((gridArray at:a) at:b) do: [ :c | c activate ].
@@ -182,6 +192,7 @@ Simulation extend [
 		grid := Grid new .
 	]
 	setup [
+		"Setup 50 rabbits and 10 lynxes per assignment specification."
 		(1 to:50) do: [ :a |
 			| x y new_rabbit |
 				x := (1 to:10) atRandom .
@@ -198,6 +209,8 @@ Simulation extend [
 		].
 	]
 	printOn: stream [
+		"Print the current state of the simulation in a easily viewable format."
+		"Lynxes are on top in each cell, rabbits are on the bottom."
 		|temp_string|
 		stream nextPutAll: '------------------------ month: ' .
 		temp_string := (month asString) . 
@@ -236,7 +249,7 @@ Simulation extend [
 Simulation extend [
 	step [
 		| current_animal |
-		"set all animals active"
+		"Set all animals active."
 		grid makeAllActive .
 		month := (month + 1) .
 		(1 to:10) do: [ :r |
