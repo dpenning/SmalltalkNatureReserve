@@ -90,8 +90,12 @@ Rabbit extend [
 	"To match the function signature specified, we store the Grid Location"
 	act [self actWithGrid:(self getGrid)]
 	actWithGrid:g [
-		((g getRabbitsAtRow: (self getRow) col: (self getCol)) > 1) ifTrue: [
-			(1 to:2) do: [:a | g place:(Rabbit new) row:(self getRow) col:(self getCol)] . 
+		((g getRabbitsAtRow: (self getRow) col: (self getCol)) >= 10) ifTrue: [
+			g remove:self row:(self getRow) col:(self getCol) . 
+		] ifFalse: [
+			((g getRabbitsAtRow: (self getRow) col: (self getCol)) > 1) ifTrue: [
+				(1 to:2) do: [:a | g place:(Rabbit new) row:(self getRow) col:(self getCol)] . 
+			].
 		].
 	]
 ]
